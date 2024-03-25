@@ -7,17 +7,45 @@ namespace APCSP
         struct Player
         {
             string looksLike;
-            int atk;
-            int hp;
+            public int atk;
+            public int hp;
+            int recentHp;
             int criticalRate;
+            int xPosition;
+            int yPosition;
 
-            public Player(string looksLike, int atk, int hp, int criticalRate)
+            public Player(string looksLike, int atk, int hp, int criticalRate, int xPosition, int yPosition)
             {
                 this.looksLike = looksLike;
                 this.atk = atk;
                 this.hp = hp;
+                this.recentHp = hp;
                 this.criticalRate = criticalRate;
+                this.xPosition = xPosition;
+                this.yPosition = yPosition;
             }
+        }
+
+        //not sure
+        static void CleanStartPage()
+        {
+            Console.SetCursorPosition(71, 5);
+            Console.WriteLine("            ");
+
+            Console.SetCursorPosition(71, 13);
+            Console.WriteLine("           ");
+
+            Console.SetCursorPosition(72, 17);
+            Console.WriteLine("         ");
+
+            Console.SetCursorPosition(157, 37);
+            Console.Write("              ");
+            Console.SetCursorPosition(156, 38);
+            Console.Write("                ");
+            Console.SetCursorPosition(159, 41);
+            Console.Write("          ");
+            Console.SetCursorPosition(156, 42);
+            Console.Write("                ");
         }
 
         static void StartPage()
@@ -129,8 +157,9 @@ namespace APCSP
             Console.SetWindowSize(200, 100);
             Console.SetBufferSize(210, 110);
             byte recentStage = 0;
-
+            Random r = new Random();
             Console.CursorVisible = false;
+
             Console.WriteLine("Full screen, then press any key to start.");
             Console.ReadKey();
             Console.Clear();
@@ -152,6 +181,13 @@ namespace APCSP
                         }
                         break;
                     case 1: //in game
+                        // Console.Clear();
+                        // RedBlocks();
+                        CleanStartPage();
+                        Player kunKun = new Player("", 10, 100, 10, xWeiZhi, yWeiZhi);
+                        Player monster1 = new Player("", r.Next(kunKun.atk - kunKun.atk*0.1, kunKun.atk + kunKun.atk*0.1), r.Next(kunKun.hp - kunKun.hp*0.1, kunKun.hp + kunKun.hp*0.1), 10, r.Next(2, 177), r.Next(1, 46));
+                        
+                        
                         break;
                     case 2: //end game page
                         break;
