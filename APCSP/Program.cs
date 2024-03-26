@@ -71,6 +71,62 @@ namespace APCSP
             }
         }
 
+        static void Move()
+        {
+            while (true)
+            {
+                Console.SetCursorPosition(kunKun.xPosition, kunKun.yPosition);
+                switch (Console.ReadKey(true).KeyChar)
+                {
+                    case 'w':
+                        kunKun.yPosition += CheckRepeatPosition(kunKun.xPosition, kunKun.yPosition+1) ? 1 : 0;
+                        break;
+                    case 's':
+                        kunKun.yPosition -= CheckRepeatPosition(kunKun.xPosition, kunKun.yPosition-1) ? 1 : 0;
+                        break;
+                    case 'a':
+                        kunKun.xPosition -= CheckRepeatPosition(kunKun.xPosition-2, kunKun.yPosition) ? 2 : 0;
+                        break;
+                    case 'd':
+                        kunKun.xPosition += CheckRepeatPosition(kunKun.xPosition+2, kunKun.yPosition) ? 2 : 0;
+                        break;
+                    case 'j': //attack
+                        IsValidAttack(kunKun.xPosition, kunKun.yPosition, importantXPositions, importantYPositions);
+                        break;
+                    case 'p': //save game
+                        break;
+                    case '1': //caiDan
+                        break;
+
+                }
+            }
+        }
+
+        static bool IsValidAttack(int xPosition, int yPosition, int[] xPositions, int[] yPositions)
+        {
+            for (int i = 0; i < xPosition.Length; i++)
+            {
+                if (xPositions[i] == xPosition+2 || xPositions[i] == xPosition-2 || yPositions[i] == yPosition+1 || yPositions[i] == yPosition-2)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        {
+            if (xPosition + 2 == number || xPosition - 2 == number || yPosition)
+        }
+
+        static bool CheckRepeatPosition(int xPosition, int yPosition)
+        {
+            if (xPosition > 148 || xPosition < 2 || yPosition > 34 || yPosition < 1)
+            {
+                return false;
+            }
+            return true;
+        }
+
         static void StartPageGuide()
         {
             RedBlocks();
@@ -196,7 +252,8 @@ namespace APCSP
 
         static void Main(string[] args)
         {
-            
+            int[] importantXPositions = new int[] {};
+            int[] importantYPositions = new int[] {};
             Console.SetWindowSize(200, 100);
             Console.SetBufferSize(210, 110);
             byte recentStage = 0;
@@ -229,7 +286,7 @@ namespace APCSP
                         StartGameGuide();
 
                         Player kunKun = new Player("答", 10, 100, 10, 74, 18);
-                        Player monster1 = new Player("▲", r.Next(kunKun.atk - (int) (kunKun.atk * 0.1), kunKun.atk + (int) (kunKun.atk * 0.1)), r.Next(kunKun.hp - (int) (kunKun.hp * 0.1), kunKun.hp + (int) (kunKun.hp * 0.1)), 10, r.Next(2, 177), r.Next(1, 46));
+                        Player monster = new Player("▲", r.Next(kunKun.atk - (int) (kunKun.atk * 0.1), kunKun.atk + (int) (kunKun.atk * 0.1)), r.Next(kunKun.hp - (int) (kunKun.hp * 0.1), kunKun.hp + (int) (kunKun.hp * 0.1)), 10, r.Next(2, 177), r.Next(1, 46));
                         kunKun.Show();
                         int a = Console.ReadKey(true).KeyChar;
                         //Sound ji = new Sound();
