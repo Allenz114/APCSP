@@ -56,13 +56,13 @@ namespace APCSP
 
             }
 
-            void CheckRepeatPosition(int xPosition, int yPosition)
-            {
-                if (xPosition == 74 && yPosition == 18 /*||*/)
-                {
+            // void MonsterCheckRepeatPosition(int xPosition, int yPosition) //check monster.position is equal player's position when random generating
+            // {
+            //     if (xPosition == 74 && yPosition == 18 /*||*/)
+            //     {
 
-                }
-            }
+            //     }
+            // }
 
             public void Show()
             {
@@ -71,7 +71,7 @@ namespace APCSP
             }
         }
 
-        static void Move()
+        static void Move(int[] importantXPositions, int[] importantYPositions)
         {
             while (true)
             {
@@ -93,8 +93,6 @@ namespace APCSP
                     case 'j': //attack
                         IsValidAttack(kunKun.xPosition, kunKun.yPosition, importantXPositions, importantYPositions);
                         break;
-                    case 'p': //save game
-                        break;
                     case '1': //caiDan
                         break;
 
@@ -102,7 +100,7 @@ namespace APCSP
             }
         }
 
-        static bool IsValidAttack(int xPosition, int yPosition, int[] xPositions, int[] yPositions)
+        static bool IsValidAttack(int xPosition, int yPosition, int[] xPositions, int[] yPositions) //!!!!!!!!!!!!!!!!!Change the array positions to monster.xPosition
         {
             for (int i = 0; i < xPosition.Length; i++)
             {
@@ -114,17 +112,30 @@ namespace APCSP
             return false;
         }
 
+        static bool CheckRepeatPosition(int xPosition, int yPosition, int[] importantXPositions, int[] importantYPositions)
         {
-            if (xPosition + 2 == number || xPosition - 2 == number || yPosition)
-        }
-
-        static bool CheckRepeatPosition(int xPosition, int yPosition)
-        {
-            if (xPosition > 148 || xPosition < 2 || yPosition > 34 || yPosition < 1)
+            if (xPosition > 148 || xPosition < 2 || yPosition > 34 || yPosition < 1) //don't cross red blocks
             {
                 return false;
             }
+
+            for (int i = 0; i < importantXPositions.Length; i++)
+            {
+                if (xPosition == importantXPositions[i] && yPosition == importantYPositions[i])
+                {
+                    return false;
+                }
+            }
+
             return true;
+        }
+
+        static void CreateObjects()
+        {
+            Player kunKun = new Player("答", 10, 100, 10, 74, 18);
+            Player monster = new Player("▲", r.Next(kunKun.atk - (int) (kunKun.atk * 0.1), kunKun.atk + (int) (kunKun.atk * 0.1)), r.Next(kunKun.hp - (int) (kunKun.hp * 0.1), kunKun.hp + (int) (kunKun.hp * 0.1)), 10, r.Next(2, 177), r.Next(1, 46));
+            Player boss = new Player("WuJiaoXing", 114, 5141, 91, 98, 10); //hen, hen, hen, aaaaaaaaaaaaaaaaa
+            Console.SetCursorPosition()
         }
 
         static void StartPageGuide()
@@ -252,8 +263,8 @@ namespace APCSP
 
         static void Main(string[] args)
         {
-            int[] importantXPositions = new int[] {};
-            int[] importantYPositions = new int[] {};
+            int[] importantXPositions = {148, 2, 74}; //1st question, 2nd save, 3rd
+            int[] importantYPositions = {34, 34, 2};
             Console.SetWindowSize(200, 100);
             Console.SetBufferSize(210, 110);
             byte recentStage = 0;
@@ -284,13 +295,14 @@ namespace APCSP
                         Console.Clear();
                         RedBlocks();
                         StartGameGuide();
-
-                        Player kunKun = new Player("答", 10, 100, 10, 74, 18);
-                        Player monster = new Player("▲", r.Next(kunKun.atk - (int) (kunKun.atk * 0.1), kunKun.atk + (int) (kunKun.atk * 0.1)), r.Next(kunKun.hp - (int) (kunKun.hp * 0.1), kunKun.hp + (int) (kunKun.hp * 0.1)), 10, r.Next(2, 177), r.Next(1, 46));
+                        CreateObjects();
+                        
                         kunKun.Show();
                         int a = Console.ReadKey(true).KeyChar;
                         //Sound ji = new Sound();
                         //ji.CallJi();
+
+                        Move(importantXPositions, importantYPositions);
 
                         break;
                     case 2: //continue game
