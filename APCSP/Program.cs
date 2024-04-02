@@ -157,7 +157,19 @@ namespace APCSP
                         }
                         break;
                     case 'j': //attack
-                        IsValidAttack(kunKun.xPosition, kunKun.yPosition, importantXPositions, importantYPositions);
+                        switch (IsValidAttack(kunKun.xPosition, kunKun.yPosition, importantXPositions, importantYPositions))
+                        {
+                            case 0: //question
+                                break;
+                            case 1: //save
+                                break;
+                            case 2: //boss
+                                break;
+                            case 3: //monster
+                                break;
+                            case 114514: //nothing happens
+                                break;
+                        }
                         break;
                     case '1': //caiDan
                         break;
@@ -166,19 +178,19 @@ namespace APCSP
             }
         }
 
-        static bool IsValidAttack(int xPosition, int yPosition, int[] xPositions, int[] yPositions)
+        static int IsValidAttack(int xPosition, int yPosition, int[] xPositions, int[] yPositions)
         {
             for (int i = 0; i < xPositions.Length; i++)
             {
                 if (xPositions[i] == xPosition+2 || xPositions[i] == xPosition-2 || yPositions[i] == yPosition+1 || yPositions[i] == yPosition-2)
                 {
-                    return true;
+                    return i;
                 }
             }
-            return false;
+            return 114514;
         }
 
-        static bool CheckRepeatPosition(int xPosition, int yPosition, int[] importantXPositions, int[] importantYPositions)
+        static bool CheckRepeatPosition(int xPosition, int yPosition, int[] importantXPositions, int[] importantYPositions) //for kunKun
         {
             if (xPosition > 148 || xPosition < 2 || yPosition > 34 || yPosition < 1) //don't cross red blocks
             {
@@ -356,15 +368,7 @@ namespace APCSP
                 switch (recentStage)
                 {
                     case 0: //start page
-                        switch (StartGameOrNot())
-                        {
-                            case true:
-                                recentStage = 1;
-                                break;
-                            case false:
-                                recentStage = 4;
-                                break;
-                        }
+                        recentStage = StartGameOrNot() ? 1 : 4;
                         break;
                     case 1: //in game
                         Console.Clear();
