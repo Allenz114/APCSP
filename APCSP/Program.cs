@@ -53,49 +53,71 @@ namespace APCSP
                 this.criticalRate = criticalRate;
                 this.xPosition = xPosition;
                 this.yPosition = yPosition;
-
             }
 
-            public void MonsterCheckRepeatPosition(int[] xPositions, int[] yPositions, bool xOrY) //check monster.position is equal player's position when random generating
+            public Player(string looksLike, int atk, int hp, int criticalRate, int xPosition)
             {
-                int xPosition = r.Next(2, 176);
-                int yPosition = r.Next(1, 44);
+                this.looksLike = looksLike;
+                this.atk = atk;
+                this.hp = hp;
+                this.recentHp = hp;
+                this.criticalRate = criticalRate;
+                this.xPosition = xPosition;
+                this.yPosition = 0;
+            }
+
+            public int RandomGenerateXPosition()
+            {
+                Random r = new Random();
+                int xPosition = r.Next(2, 149);
                 while (xPosition % 2 != 0)
                 {
-                    xPosition = r.Next(2, 176);
+                    xPosition = r.Next(2, 149);
                 }
-                
-                if (xOrY) //if already have x position
+                return xPosition;
+            }
+
+            public int RandomGenerateYPosition(int xPosition, int[] xPositions, int[] yPositions, Player kunKun, Player monster)
+            {
+                Random r = new Random();
+                int yPosition = r.Next(1, 34);
+                bool continueLoop = true;
+
+                while (continueLoop)
                 {
-                    xPosition = monster.xPosition;
                     if (xPosition == kunKun.xPosition && yPosition == kunKun.yPosition)
                     {
-
+                        yPosition = r.Next(1, 34);
+                        continue;
                     }
-                }
-                else
-                {
-                    if (xPosition == kunKun.xPosition && yPosition == kunKun.yPosition)
+
+                    for (int i = 0; i < xPositions.Length; i++)
                     {
-
+                        if (xPosition == xPositions[i] && yPosition == yPositions[i])
+                        {
+                            yPosition = r.Next(1, 34);
+                            break;
+                        }
+                        continueLoop = false;
                     }
                 }
+                return yPosition;
             }
 
             public void Show()
             {
-                Console.SetCursorPosition(this.xPosition, this.yPosition);
-                Console.Write(this.looksLike);
-            }
+                Console.SetCursorPosition(xPosition, yPosition);
+                Console.Write(looksLike);
+            } //print looksLike
         }
 
         static void CoverLastPosition(int xPosition, int yPosition)
         {
             Console.SetCursorPosition(xPosition, yPosition);
-            Console.White(" ");
+            Console.Write(" ");
         }
 
-        static void Move(int[] importantXPositions, int[] importantYPositions)
+        static void Move(int[] importantXPositions, int[] importantYPositions, ref Player kunKun)
         {
             while (true)
             {
@@ -103,31 +125,35 @@ namespace APCSP
                 switch (Console.ReadKey(true).KeyChar)
                 {
                     case 'w':
-                        if (CheckRepeatPosition(kunKun.xPosition, kunKun.yPosition+1))
-                        {
-                            CoverLastPosition(kunKun.xPosition, kunKun.yPosition);
-                            kunKun.yPosition += 1;
-                        }
-                        break;
-                    case 's':
-                        if (CheckRepeatPosition(kunKun.xPosition, kunKun.yPosition-1))
+                        if (CheckRepeatPosition(kunKun.xPosition, kunKun.yPosition - 1, importantXPositions, importantYPositions))
                         {
                             CoverLastPosition(kunKun.xPosition, kunKun.yPosition);
                             kunKun.yPosition -= 1;
+                            kunKun.Show();
+                        }
+                        break;
+                    case 's':
+                        if (CheckRepeatPosition(kunKun.xPosition, kunKun.yPosition + 1, importantXPositions, importantYPositions))
+                        {
+                            CoverLastPosition(kunKun.xPosition, kunKun.yPosition);
+                            kunKun.yPosition += 1;
+                            kunKun.Show();
                         }
                         break;
                     case 'a':
-                        if (CheckRepeatPosition(kunKun.xPosition-2, kunKun.yPosition))
+                        if (CheckRepeatPosition(kunKun.xPosition - 2, kunKun.yPosition, importantXPositions, importantYPositions))
                         {
                             CoverLastPosition(kunKun.xPosition, kunKun.yPosition);
                             kunKun.xPosition -= 2;
+                            kunKun.Show();
                         }
                         break;
                     case 'd':
-                        if (CheckRepeatPosition(kunKun.xPosition+2, kunKun.yPosition))
+                        if (CheckRepeatPosition(kunKun.xPosition + 2, kunKun.yPosition, importantXPositions, importantYPositions))
                         {
                             CoverLastPosition(kunKun.xPosition, kunKun.yPosition);
                             kunKun.xPosition += 2;
+                            kunKun.Show();
                         }
                         break;
                     case 'j': //attack
@@ -142,7 +168,7 @@ namespace APCSP
 
         static bool IsValidAttack(int xPosition, int yPosition, int[] xPositions, int[] yPositions)
         {
-            for (int i = 0; i < xPosition.Length; i++)
+            for (int i = 0; i < xPositions.Length; i++)
             {
                 if (xPositions[i] == xPosition+2 || xPositions[i] == xPosition-2 || yPositions[i] == yPosition+1 || yPositions[i] == yPosition-2)
                 {
@@ -170,19 +196,21 @@ namespace APCSP
             return true;
         }
 
-        static void CreateObjects(int[] importantXPositions, int[] importantYPositions)
+        static void CreateObjects(ref int[] importantXPositions, ref int[] importantYPositions, ref Player kunKun, ref Player monster, ref Player boss)
         {
-            Player kunKun = new Player("答", 10, 100, 10, 74, 18);
-            Player monster = new Player("▲", r.Next(kunKun.atk - (int) (kunKun.atk * 0.1), kunKun.atk + (int) (kunKun.atk * 0.1)), r.Next(kunKun.hp - (int) (kunKun.hp * 0.1), kunKun.hp + (int) (kunKun.hp * 0.1)), 10, monster.MonsterCheckRepeatPosition());
-            Player boss = new Player("WuJiaoXing", 114, 5141, 91, 98, 10); //hen, hen, hen, aaaaaaaaaaaaaaaaa
+            Random r = new Random();
+            kunKun = new Player("答", 10, 100, 10, 74, 18);
+            monster = new Player("▲", r.Next(kunKun.atk - (int) (kunKun.atk * 0.1), kunKun.atk + (int) (kunKun.atk * 0.1)), r.Next(kunKun.hp - (int) (kunKun.hp * 0.1), kunKun.hp + (int) (kunKun.hp * 0.1)), 10, monster.RandomGenerateXPosition());
+            monster.yPosition = monster.RandomGenerateYPosition(monster.xPosition, importantXPositions, importantYPositions, kunKun, monster);
+            boss = new Player("首", 114, 5141, 91, 98, 10); //hen, hen, hen, aaaaaaaaaaaaaaaaa
 
-            importantXPositions = {148, 2, 98, monster.xPosition}; //1st question, 2nd save, 3rd BOSS
-            importantYPositions = {34, 34, 10, monster.yPosition};
+            importantXPositions = [148, 2, 98, monster.xPosition]; //1st question, 2nd save, 3rd BOSS, 4th monster
+            importantYPositions = [34, 34, 10, monster.yPosition];
 
             Console.SetCursorPosition(148, 34);
             Console.Write("Question"); //need a sign
             Console.SetCursorPosition(2, 34);
-            Console.White("Save"); //need a sign
+            Console.Write("Save"); //need a sign
         }
 
         static void StartPageGuide()
@@ -310,8 +338,8 @@ namespace APCSP
 
         static void Main(string[] args)
         {
-            importantXPositions = {148, 2, 98}; //arrays without monster's position
-            importantYPositions = {34, 34, 10};
+            int[] importantXPositions = {148, 2, 98}; //arrays without monster's position
+            int[] importantYPositions = {34, 34, 10};
             Console.SetWindowSize(200, 100);
             Console.SetBufferSize(210, 110);
             byte recentStage = 0;
@@ -342,14 +370,21 @@ namespace APCSP
                         Console.Clear();
                         RedBlocks();
                         StartGameGuide();
-                        CreateObjects(importantXPositions, importantYPositions);
+
+                        Player kunKun = new Player();
+                        Player monster = new Player();
+                        Player boss = new Player();
+                        CreateObjects(ref importantXPositions, ref importantYPositions, ref kunKun, ref monster, ref boss);
                         
+
+
                         kunKun.Show();
-                        int a = Console.ReadKey(true).KeyChar;
+                        monster.Show();
+                        boss.Show();
                         //Sound ji = new Sound();
                         //ji.CallJi();
 
-                        Move(importantXPositions, importantYPositions);
+                        Move(importantXPositions, importantYPositions, ref kunKun);
 
                         break;
                     case 2: //continue game
