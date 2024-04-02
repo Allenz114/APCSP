@@ -196,7 +196,7 @@ namespace APCSP
             return true;
         }
 
-        static void CreateObjects(ref int[] importantXPositions, ref int[] importantYPositions, ref Player kunKun, ref Player monster, ref Player boss)
+        static void CreateObjects(int[] importantXPositions, int[] importantYPositions, ref Player kunKun, ref Player monster, ref Player boss)
         {
             Random r = new Random();
             kunKun = new Player("答", 10, 100, 10, 74, 18);
@@ -204,8 +204,8 @@ namespace APCSP
             monster.yPosition = monster.RandomGenerateYPosition(monster.xPosition, importantXPositions, importantYPositions, kunKun, monster);
             boss = new Player("首", 114, 5141, 91, 98, 10); //hen, hen, hen, aaaaaaaaaaaaaaaaa
 
-            importantXPositions = [148, 2, 98, monster.xPosition]; //1st question, 2nd save, 3rd BOSS, 4th monster
-            importantYPositions = [34, 34, 10, monster.yPosition];
+            importantXPositions[3] = monster.xPosition; //1st question, 2nd save, 3rd BOSS, 4th monster
+            importantYPositions[3] = monster.yPosition;
 
             Console.SetCursorPosition(148, 34);
             Console.Write("Question"); //need a sign
@@ -338,8 +338,8 @@ namespace APCSP
 
         static void Main(string[] args)
         {
-            int[] importantXPositions = {148, 2, 98}; //arrays without monster's position
-            int[] importantYPositions = {34, 34, 10};
+            int[] importantXPositions = {148, 2, 98, 0}; //arrays without monster's position
+            int[] importantYPositions = {34, 34, 10, 0};
             Console.SetWindowSize(200, 100);
             Console.SetBufferSize(210, 110);
             byte recentStage = 0;
@@ -374,7 +374,7 @@ namespace APCSP
                         Player kunKun = new Player();
                         Player monster = new Player();
                         Player boss = new Player();
-                        CreateObjects(ref importantXPositions, ref importantYPositions, ref kunKun, ref monster, ref boss);
+                        CreateObjects(importantXPositions, importantYPositions, ref kunKun, ref monster, ref boss);
                         
 
 
