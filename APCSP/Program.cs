@@ -111,10 +111,42 @@ namespace APCSP
             } //print looksLike
         }
 
+        static void BossFight()
+        {
+            Console.SetCursorPosition(2, 36);
+            Console.WriteLine("Start fight with BOSS!");
+            Console.SetCursorPosition(2, 37);
+            Console.WriteLine("Press J to continue.");
+        }
+
         static void CoverLastPosition(int xPosition, int yPosition)
         {
             Console.SetCursorPosition(xPosition, yPosition);
             Console.Write(" ");
+        }
+
+        static void ClearConsole()
+        {
+            Console.SetCursorPosition(2, 36);
+            Console.WritheLine("                                                                                                                                                                                            ");
+            Console.SetCursorPosition(2, 37);
+            Console.WritheLine("                                                                                                                                                                                            ");
+            Console.SetCursorPosition(2, 38);
+            Console.WritheLine("                                                                                                                                                                                            ");
+            Console.SetCursorPosition(2, 39);
+            Console.WritheLine("                                                                                                                                                                                            ");
+            Console.SetCursorPosition(2, 40);
+            Console.WritheLine("                                                                                                                                                                                            ");
+            Console.SetCursorPosition(2, 41);
+            Console.WritheLine("                                                                                                                                                                                            ");
+            Console.SetCursorPosition(2, 42);
+            Console.WritheLine("                                                                                                                                                                                            ");
+            Console.SetCursorPosition(2, 43);
+            Console.WritheLine("                                                                                                                                                                                            ");
+            Console.SetCursorPosition(2, 44);
+            Console.WritheLine("                                                                                                                                                                                            ");
+            Console.SetCursorPosition(2, 45);
+            Console.WritheLine("                                                                                                                                                                                            ");
         }
 
         static void Move(int[] importantXPositions, int[] importantYPositions, ref Player kunKun)
@@ -160,10 +192,13 @@ namespace APCSP
                         switch (IsValidAttack(kunKun.xPosition, kunKun.yPosition, importantXPositions, importantYPositions))
                         {
                             case 0: //question
+                                Console.SetCursorPosition(2, 36);
+
                                 break;
                             case 1: //save
                                 break;
                             case 2: //boss
+                                
                                 break;
                             case 3: //monster
                                 break;
