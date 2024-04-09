@@ -6,9 +6,9 @@ namespace APCSP
 {
     enum E_Weapon
     {
-        Wooden Sword;
-        Physics Excalibur;
-        Lawyer's letter;
+        Wooden Sword,
+        Physics Excalibur,
+        Lawyer's letter
     }
 
     internal class Program
@@ -45,6 +45,7 @@ namespace APCSP
         {
             public string looksLike;
             public int atk;
+            public int atkedHp = atk;
             public int hp;
             public int recentHp;
             public int criticalRate;
@@ -121,7 +122,7 @@ namespace APCSP
 
         
 
-        static void Move(int[] importantXPositions, int[] importantYPositions, ref Player kunKun)
+        static bool Move(int[] importantXPositions, int[] importantYPositions, ref Player kunKun, ref Player monster, ref Player boss)
         {
             while (true)
             {
@@ -164,22 +165,31 @@ namespace APCSP
                         switch (IsValidAttack(kunKun.xPosition, kunKun.yPosition, importantXPositions, importantYPositions))
                         {
                             case 0: //question
-                                
-
+                                ClearConsole();
+                                Question();
                                 break;
                             case 1: //save
                                 break;
                             case 2: //boss
-                                
+                                if (BossFight())
+                                {
+                                    return true;
+                                }
                                 break;
                             case 3: //monster
+                                MonsterFight();
                                 break;
                             case 114514: //nothing happens
                                 break;
                         }
                         break;
-                    case '1': //caiDan
-                        int caiDan = console.readKey(true).KeyChar == '1' ? console.readKey(true).KeyChar == '4' ? : 0;
+                    case '1': //special gift
+                        if (console.readKey(true).KeyChar == '1' ? console.ReadKey(ture).KeyChar == '4' ? console.ReadKey(ture).KeyChar == '5' ? console.ReadKey(ture).KeyChar == '1' ? console.ReadKey(ture).KeyChar == '4' ? true : false : false : false : false : false)
+                        {
+                            kunKun.weapon = 2;
+                            ClearConsole();
+                            Console.Write("Congradulations! You got Weapon: Lawyer's letter");
+                        }
                         break;
 
                 }
@@ -192,12 +202,82 @@ namespace APCSP
             Console.Write("");
         }
 
-        static void BossFight()
+        static void BossFight(ref Player kunKun, ref Player boss)
         {
-            Console.SetCursorPosition(2, 36);
-            Console.WriteLine("Start fight with BOSS!");
+            ClearConsole();
+            Console.Write("Start fight with BOSS!");
             Console.SetCursorPosition(2, 37);
-            Console.WriteLine("Press J to continue.");
+            Console.Write("Press J to continue.");
+            while (kunKun.recentHp <= 0)
+            {
+                if (JAttack(kunKun, boss)) //if one of their's hp <= 0
+                {
+                    if (boss.recentHp <= 0)
+                    {
+
+                    }
+                    else
+                    {
+
+                    }
+                    break;
+                }
+                ClearConsole();
+                Console.Write("You hit boss {0} hp, boss still have {1} hp", kunKun.atkedHp, boss.recentHp);
+                Console.SetCursorPosition(2, 37);
+                Console.Write("Boss hit you {0} hp, you still have {1} hp", boss.atkedHp, kunKun.recentHp);
+            }
+        }
+
+        static bool MonsterFight(ref Player kunKun, ref Player monster)
+        {
+            ClearConsole();
+            Console.Write("Start fight with monster!");
+            Console.SetCursorPosition(2, 37);
+            Console.Write("Press J to continue.");
+            while (kunKun.recentHp <= 0)
+            {
+                if (JAttack(kunKun, monster)) //if one of their's hp <= 0
+                {
+                    if (monster.recentHp <= 0)
+                    {
+                        ClearConsole();
+                        console.Write("Congradulations! You won the monster!");
+                        return false;
+                    }
+                    else
+                    {
+                        ClearConsole();
+                        console.Write("You lost");
+                        return true;
+                    }
+                    break;
+                }
+                ClearConsole();
+                Console.Write("You hit monster {0} hp, monster still have {1} hp", kunKun.atkedHp, monster.recentHp);
+                Console.SetCursorPosition(2, 37);
+                Console.Write("Monster hit you {0} hp, you still have {1} hp", monster.atkedHp, kunKun.recentHp);
+            }
+            return false;
+        }
+
+        static bool JAttack(ref Player kunKun, ref Player nonKunKun)
+        {
+            Random r = new Random();
+            switch (console.ReadKey(ture).KeyChar)
+            {
+                case 'j':
+                    kunKun.atkedHp = kunKun.atk + r.Next(0, 101) <= kunKun.criticalRate ? kunKun.atk : 0;
+                    nonKunKun.recentHp -= kunKun.atkedHp;
+                    nonKunKun.atkedHp = nonKunKun.atk + r.Next(0, 101) <= nonKunKun.criticalRate ? nonKunKun.atk : 0;
+                    kunKun.recentHp -= nonKunKun.atkedHp;
+                    if (nonKunKun.recentHp <= 0 || kunKun.recentHp <= 0)
+                    {
+                        return true;
+                    }
+                    return false;
+            }
+            return false;
         }
 
         static void CoverLastPosition(int xPosition, int yPosition)
@@ -228,6 +308,12 @@ namespace APCSP
             Console.WritheLine("                                                                                                                                                                                            ");
             Console.SetCursorPosition(2, 45);
             Console.WritheLine("                                                                                                                                                                                            ");
+            Console.SetCursorPosition(2, 36);
+        }
+
+        static void ClearInstructure()
+        {
+
         }
 
         static int IsValidAttack(int xPosition, int yPosition, int[] xPositions, int[] yPositions)
@@ -440,7 +526,10 @@ namespace APCSP
                         //Sound ji = new Sound();
                         //ji.CallJi();
 
-                        Move(importantXPositions, importantYPositions, ref kunKun);
+                        if (Move(importantXPositions, importantYPositions, ref kunKun, ref boss, ref monster))
+                        {
+                            recentStage = 3;
+                        }
 
                         break;
                     case 2: //continue game
