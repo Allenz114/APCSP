@@ -4,13 +4,6 @@ using System.Runtime.InteropServices;
 
 namespace APCSP
 {
-    enum E_Weapon
-    {
-        Wooden Sword,
-        Physics Excalibur,
-        Lawyer's letter
-    }
-
     internal class Program
     {
         //struct Sound
@@ -45,13 +38,13 @@ namespace APCSP
         {
             public string looksLike;
             public int atk;
-            public int atkedHp = atk;
+            public int atkedHp;
             public int hp;
             public int recentHp;
             public int criticalRate;
             public int xPosition;
             public int yPosition;
-            public E_Weapon weapon = 0;
+            public string weapon = "Wooden Sword";
 
             public Player(string looksLike, int atk, int hp, int criticalRate, int xPosition, int yPosition)
             {
@@ -167,31 +160,31 @@ namespace APCSP
                             case 0: //question
                                 ClearConsole();
                                 Question();
+                                kunKun.weapon = "Physics Excalibur";
                                 break;
                             case 1: //save
                                 break;
                             case 2: //boss
-                                if (BossFight())
+                                if (BossFight(ref kunKun, ref boss))
                                 {
                                     return true;
                                 }
                                 break;
                             case 3: //monster
-                                MonsterFight();
+                                MonsterFight(ref kunKun, ref monster);
                                 break;
                             case 114514: //nothing happens
                                 break;
                         }
                         break;
                     case '1': //special gift
-                        if (console.readKey(true).KeyChar == '1' ? console.ReadKey(ture).KeyChar == '4' ? console.ReadKey(ture).KeyChar == '5' ? console.ReadKey(ture).KeyChar == '1' ? console.ReadKey(ture).KeyChar == '4' ? true : false : false : false : false : false)
+                        if (Console.ReadKey(true).KeyChar == '1' ? Console.ReadKey(true).KeyChar == '4' ? Console.ReadKey(true).KeyChar == '5' ? Console.ReadKey(true).KeyChar == '1' ? Console.ReadKey(true).KeyChar == '4' ? true : false : false : false : false : false)
                         {
-                            kunKun.weapon = 2;
+                            kunKun.weapon = "Lawyer's Letter";
                             ClearConsole();
                             Console.Write("Congradulations! You got Weapon: Lawyer's letter");
                         }
                         break;
-
                 }
             }
         }
@@ -202,7 +195,7 @@ namespace APCSP
             Console.Write("");
         }
 
-        static void BossFight(ref Player kunKun, ref Player boss)
+        static bool BossFight(ref Player kunKun, ref Player boss)
         {
             ClearConsole();
             Console.Write("Start fight with BOSS!");
@@ -210,7 +203,7 @@ namespace APCSP
             Console.Write("Press J to continue.");
             while (kunKun.recentHp <= 0)
             {
-                if (JAttack(kunKun, boss)) //if one of their's hp <= 0
+                if (JAttack(ref kunKun, ref boss)) //if one of their's hp <= 0
                 {
                     if (boss.recentHp <= 0)
                     {
@@ -227,6 +220,7 @@ namespace APCSP
                 Console.SetCursorPosition(2, 37);
                 Console.Write("Boss hit you {0} hp, you still have {1} hp", boss.atkedHp, kunKun.recentHp);
             }
+            return false;
         }
 
         static bool MonsterFight(ref Player kunKun, ref Player monster)
@@ -237,18 +231,18 @@ namespace APCSP
             Console.Write("Press J to continue.");
             while (kunKun.recentHp <= 0)
             {
-                if (JAttack(kunKun, monster)) //if one of their's hp <= 0
+                if (JAttack(ref kunKun, ref monster)) //if one of their's hp <= 0
                 {
                     if (monster.recentHp <= 0)
                     {
                         ClearConsole();
-                        console.Write("Congradulations! You won the monster!");
+                        Console.Write("Congradulations! You won the monster!");
                         return false;
                     }
                     else
                     {
                         ClearConsole();
-                        console.Write("You lost");
+                        Console.Write("You lost");
                         return true;
                     }
                     break;
@@ -264,7 +258,7 @@ namespace APCSP
         static bool JAttack(ref Player kunKun, ref Player nonKunKun)
         {
             Random r = new Random();
-            switch (console.ReadKey(ture).KeyChar)
+            switch (Console.ReadKey(true).KeyChar)
             {
                 case 'j':
                     kunKun.atkedHp = kunKun.atk + r.Next(0, 101) <= kunKun.criticalRate ? kunKun.atk : 0;
@@ -289,25 +283,25 @@ namespace APCSP
         static void ClearConsole()
         {
             Console.SetCursorPosition(2, 36);
-            Console.WritheLine("                                                                                                                                                                                            ");
+            Console.Write("                                                                                                                                                                                            ");
             Console.SetCursorPosition(2, 37);
-            Console.WritheLine("                                                                                                                                                                                            ");
+            Console.Write("                                                                                                                                                                                            ");
             Console.SetCursorPosition(2, 38);
-            Console.WritheLine("                                                                                                                                                                                            ");
+            Console.Write("                                                                                                                                                                                            ");
             Console.SetCursorPosition(2, 39);
-            Console.WritheLine("                                                                                                                                                                                            ");
+            Console.Write("                                                                                                                                                                                            ");
             Console.SetCursorPosition(2, 40);
-            Console.WritheLine("                                                                                                                                                                                            ");
+            Console.Write("                                                                                                                                                                                            ");
             Console.SetCursorPosition(2, 41);
-            Console.WritheLine("                                                                                                                                                                                            ");
+            Console.Write("                                                                                                                                                                                            ");
             Console.SetCursorPosition(2, 42);
-            Console.WritheLine("                                                                                                                                                                                            ");
+            Console.Write("                                                                                                                                                                                            ");
             Console.SetCursorPosition(2, 43);
-            Console.WritheLine("                                                                                                                                                                                            ");
+            Console.Write("                                                                                                                                                                                            ");
             Console.SetCursorPosition(2, 44);
-            Console.WritheLine("                                                                                                                                                                                            ");
+            Console.Write("                                                                                                                                                                                            ");
             Console.SetCursorPosition(2, 45);
-            Console.WritheLine("                                                                                                                                                                                            ");
+            Console.Write("                                                                                                                                                                                            ");
             Console.SetCursorPosition(2, 36);
         }
 
@@ -369,15 +363,15 @@ namespace APCSP
 
             Console.ForegroundColor = ConsoleColor.White;
             Console.SetCursorPosition(71, 5);
-            Console.WriteLine("KunKun Fight");
+            Console.Write("KunKun Fight");
 
             Console.ForegroundColor = ConsoleColor.Red;
             Console.SetCursorPosition(71, 13);
-            Console.WriteLine("Start  Game");
+            Console.Write("Start  Game");
 
             Console.ForegroundColor = ConsoleColor.White;
             Console.SetCursorPosition(72, 17);
-            Console.WriteLine("Quit Game");
+            Console.Write("Quit Game");
 
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.SetCursorPosition(157, 37);
@@ -432,7 +426,7 @@ namespace APCSP
             Console.SetCursorPosition(0, 0);
             for (int i = 0; i < 46; i++)
             {
-                Console.WriteLine("■");
+                Console.Write("■");
             }
 
             Console.SetCursorPosition(150, 0);
@@ -461,20 +455,20 @@ namespace APCSP
                     case 'w':
                         Console.ForegroundColor = ConsoleColor.White;
                         Console.SetCursorPosition(72, 17);
-                        Console.WriteLine("Quit Game");
+                        Console.Write("Quit Game");
                         Console.ForegroundColor = ConsoleColor.Red;
                         Console.SetCursorPosition(71, 13);
-                        Console.WriteLine("Start  Game");
+                        Console.Write("Start  Game");
                         start = true;
                         break;
 
                     case 's':
                         Console.ForegroundColor = ConsoleColor.White;
                         Console.SetCursorPosition(71, 13);
-                        Console.WriteLine("Start  Game");
+                        Console.Write("Start  Game");
                         Console.ForegroundColor = ConsoleColor.Red;
                         Console.SetCursorPosition(72, 17);
-                        Console.WriteLine("Quit Game");
+                        Console.Write("Quit Game");
                         start = false;
                         break;
                     case 'j':
@@ -492,11 +486,11 @@ namespace APCSP
             int[] importantYPositions = {34, 34, 10, 0};
             Console.SetWindowSize(200, 100);
             Console.SetBufferSize(210, 110);
-            byte recentStage = 0;
+            int recentStage = 0;
             Random r = new Random();
             Console.CursorVisible = false;
 
-            Console.WriteLine("Full screen, then press any key to start.");
+            Console.Write("Full screen, then press any key to start.");
             Console.ReadKey();
             Console.Clear();
 
