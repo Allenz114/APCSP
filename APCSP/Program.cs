@@ -116,8 +116,6 @@ namespace APCSP
             }
         }
 
-        
-
         static bool Move(int[] importantXPositions, int[] importantYPositions, ref Player kunKun, ref Player monster, ref Player boss)
         {
             Random r = new Random();
@@ -162,10 +160,14 @@ namespace APCSP
                         switch (IsValidAttack(kunKun.xPosition, kunKun.yPosition, importantXPositions, importantYPositions))
                         {
                             case 0: //question
-                                Question();
+                                Question(ref kunKun);
                                 kunKun.weapon = "Physics Excalibur";
                                 kunKun.atk += 999;
                                 kunKun.hp += 9999;
+                                ClearConsole();
+                                Console.Write("Congradulations! You got Weapon: Physics Excalibur");
+                                Console.SetCursorPosition(2, 37);
+                                Console.Write("HP + 9999, atk + 999");
                                 break;
                             case 1: //save
                                 break;
@@ -205,16 +207,61 @@ namespace APCSP
                             ClearConsole();
                             // Console.ForegroundColor = ConsoleColor.????;
                             Console.Write("Congradulations! You got Weapon: Lawyer's letter");
+                            Console.SetCursorPosition(2, 37);
+                            Console.Write("HP + 1919, atk + 250");
                         }
                         break;
                 }
             }
         }
 
-        static void Question() //lai san dao ti jiu xing le
+        static void Question(ref Player kunKun) //lai san dao ti jiu xing le
         {
             ClearConsole();
-            Console.Write("");
+            Console.Write("Is 0.9 repeat equals 1? Type 1 for yes, 2 for no");
+            Console.SetCursorPosition(2, 37);
+            if (Console.ReadKey().KeyChar == '1')
+            {
+                Console.SetCursorPosition(2, 37);
+                Console.Write("You are right! HP + 100, atk + 10");
+                kunKun.hp += 100;
+                kunKun.atk += 10;
+                ClearConsole();
+                Console.Write("");
+                Console.SetCursorPosition(2, 37);
+                if (int.Parse(Console.ReadLine()) == 1)
+                {
+                    Console.SetCursorPosition(2, 37);
+                    Console.Write("You are right! HP + 200, atk + 20");
+                    kunKun.hp += 200;
+                    kunKun.atk += 20;
+                    ClearConsole();
+                    Console.Write("");
+                    Console.SetCursorPosition(2, 37);
+                    if (int.Parse(Console.ReadLine()) == 1)
+                    {
+                        Console.SetCursorPosition(2, 37);
+                        Console.Write("You are right! HP + 300, atk + 30");
+                        kunKun.hp += 300;
+                        kunKun.atk += 30;
+                    }
+                    else
+                    {
+                        ClearConsole();
+                        Console.Write("That's incorrect");
+                    }
+                }
+                else
+                {
+                    ClearConsole();
+                    Console.Write("That's incorrect");
+                }
+            }
+            else
+            {
+                ClearConsole();
+                Console.Write("That's incorrect");
+            }
         }
 
         static bool Fight(ref Player kunKun, ref Player nonKunKun)
@@ -284,6 +331,7 @@ namespace APCSP
                 Console.SetCursorPosition(2, 36+i);
                 Console.Write("                                                                                                                                                                                            ");
             }
+            Console.SetCursorPosition(2, 36);
         }
 
         static int IsValidAttack(int xPosition, int yPosition, int[] xPositions, int[] yPositions)
