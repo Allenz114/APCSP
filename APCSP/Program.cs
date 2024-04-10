@@ -37,6 +37,7 @@ namespace APCSP
         struct Player
         {
             public string looksLike;
+            public string name;
             public int atk;
             public int atkedHp;
             public int hp;
@@ -46,9 +47,10 @@ namespace APCSP
             public int yPosition;
             public string weapon = "Wooden Sword";
 
-            public Player(string looksLike, int atk, int hp, int criticalRate, int xPosition, int yPosition)
+            public Player(string looksLike, string name, int atk, int hp, int criticalRate, int xPosition, int yPosition)
             {
                 this.looksLike = looksLike;
+                this.name = name;
                 this.atk = atk;
                 this.hp = hp;
                 this.recentHp = hp;
@@ -57,9 +59,10 @@ namespace APCSP
                 this.yPosition = yPosition;
             }
 
-            public Player(string looksLike, int atk, int hp, int criticalRate, int xPosition)
+            public Player(string looksLike, string name, int atk, int hp, int criticalRate, int xPosition)
             {
                 this.looksLike = looksLike;
+                this.name = name;
                 this.atk = atk;
                 this.hp = hp;
                 this.recentHp = hp;
@@ -117,6 +120,7 @@ namespace APCSP
 
         static bool Move(int[] importantXPositions, int[] importantYPositions, ref Player kunKun, ref Player monster, ref Player boss)
         {
+            Random r = new Random();
             while (true)
             {
                 Console.SetCursorPosition(kunKun.xPosition, kunKun.yPosition);
@@ -158,20 +162,35 @@ namespace APCSP
                         switch (IsValidAttack(kunKun.xPosition, kunKun.yPosition, importantXPositions, importantYPositions))
                         {
                             case 0: //question
-                                ClearConsole();
                                 Question();
                                 kunKun.weapon = "Physics Excalibur";
+                                kunKun.atk += 999;
+                                kunKun.hp += 9999;
                                 break;
                             case 1: //save
                                 break;
                             case 2: //boss
-                                if (BossFight(ref kunKun, ref boss))
+                                if (Fight(ref kunKun, ref boss)) //lose
                                 {
                                     return true;
                                 }
-                                break;
+                                else //win
+                                {
+                                    return false;
+                                }
                             case 3: //monster
-                                MonsterFight(ref kunKun, ref monster);
+                                if (Fight(ref kunKun, ref monster)) //lose
+                                {
+                                    return true;
+                                }
+                                else //regenerate monster
+                                {
+                                    kunKun.recentHp = kunKun.hp;
+                                    Console.SetCursorPosition(monster.xPosition, monster.yPosition);
+                                    Console.Write(" ");
+                                    monster = new Player("▲", "monster", r.Next(kunKun.atk - (int) (kunKun.atk * 0.1), kunKun.atk + (int) (kunKun.atk * 0.1)), r.Next(kunKun.hp - (int) (kunKun.hp * 0.1), kunKun.hp + (int) (kunKun.hp * 0.1)), 10, monster.RandomGenerateXPosition());
+                                    monster.Show();
+                                }
                                 break;
                             case 114514: //nothing happens
                                 break;
@@ -181,7 +200,10 @@ namespace APCSP
                         if (Console.ReadKey(true).KeyChar == '1' ? Console.ReadKey(true).KeyChar == '4' ? Console.ReadKey(true).KeyChar == '5' ? Console.ReadKey(true).KeyChar == '1' ? Console.ReadKey(true).KeyChar == '4' ? true : false : false : false : false : false)
                         {
                             kunKun.weapon = "Lawyer's Letter";
+                            kunKun.atk += 250;
+                            kunKun.hp += 1919;
                             ClearConsole();
+                            // Console.ForegroundColor = ConsoleColor.????;
                             Console.Write("Congradulations! You got Weapon: Lawyer's letter");
                         }
                         break;
@@ -191,39 +213,11 @@ namespace APCSP
 
         static void Question() //lai san dao ti jiu xing le
         {
-            Console.SetCursorPosition(2, 36);
+            ClearConsole();
             Console.Write("");
         }
 
-        static bool BossFight(ref Player kunKun, ref Player boss)
-        {
-            ClearConsole();
-            Console.Write("Start fight with BOSS!");
-            Console.SetCursorPosition(2, 37);
-            Console.Write("Press J to continue.");
-            while (kunKun.recentHp <= 0)
-            {
-                if (JAttack(ref kunKun, ref boss)) //if one of their's hp <= 0
-                {
-                    if (boss.recentHp <= 0)
-                    {
-
-                    }
-                    else
-                    {
-
-                    }
-                    break;
-                }
-                ClearConsole();
-                Console.Write("You hit boss {0} hp, boss still have {1} hp", kunKun.atkedHp, boss.recentHp);
-                Console.SetCursorPosition(2, 37);
-                Console.Write("Boss hit you {0} hp, you still have {1} hp", boss.atkedHp, kunKun.recentHp);
-            }
-            return false;
-        }
-
-        static bool MonsterFight(ref Player kunKun, ref Player monster)
+        static bool Fight(ref Player kunKun, ref Player nonKunKun)
         {
             ClearConsole();
             Console.Write("Start fight with monster!");
@@ -231,26 +225,29 @@ namespace APCSP
             Console.Write("Press J to continue.");
             while (kunKun.recentHp <= 0)
             {
-                if (JAttack(ref kunKun, ref monster)) //if one of their's hp <= 0
+                if (JAttack(ref kunKun, ref nonKunKun)) //if one of their's hp <= 0
                 {
-                    if (monster.recentHp <= 0)
+                    if (nonKunKun.recentHp <= 0)
                     {
                         ClearConsole();
-                        Console.Write("Congradulations! You won the monster!");
+                        Console.Write("Congradulations! You beat the {0}!", nonKunKun.name);
                         return false;
                     }
                     else
                     {
                         ClearConsole();
                         Console.Write("You lost");
+                        Console.SetCursorPosition(2, 39);
+                        Console.Write("Press any key to continue.");
+                        Console.ReadKey(true);
                         return true;
                     }
-                    break;
                 }
                 ClearConsole();
-                Console.Write("You hit monster {0} hp, monster still have {1} hp", kunKun.atkedHp, monster.recentHp);
+                Console.Write("You hit {0} {1} hp, {0} still have {2} hp",nonKunKun.name, kunKun.atkedHp, nonKunKun.recentHp);
                 Console.SetCursorPosition(2, 37);
-                Console.Write("Monster hit you {0} hp, you still have {1} hp", monster.atkedHp, kunKun.recentHp);
+                Console.Write("{0} hit you {1} hp, you still have {2} hp",nonKunKun.name, nonKunKun.atkedHp, kunKun.recentHp);
+                Console.SetCursorPosition(2, 38);
             }
             return false;
         }
@@ -282,39 +279,18 @@ namespace APCSP
 
         static void ClearConsole()
         {
-            Console.SetCursorPosition(2, 36);
-            Console.Write("                                                                                                                                                                                            ");
-            Console.SetCursorPosition(2, 37);
-            Console.Write("                                                                                                                                                                                            ");
-            Console.SetCursorPosition(2, 38);
-            Console.Write("                                                                                                                                                                                            ");
-            Console.SetCursorPosition(2, 39);
-            Console.Write("                                                                                                                                                                                            ");
-            Console.SetCursorPosition(2, 40);
-            Console.Write("                                                                                                                                                                                            ");
-            Console.SetCursorPosition(2, 41);
-            Console.Write("                                                                                                                                                                                            ");
-            Console.SetCursorPosition(2, 42);
-            Console.Write("                                                                                                                                                                                            ");
-            Console.SetCursorPosition(2, 43);
-            Console.Write("                                                                                                                                                                                            ");
-            Console.SetCursorPosition(2, 44);
-            Console.Write("                                                                                                                                                                                            ");
-            Console.SetCursorPosition(2, 45);
-            Console.Write("                                                                                                                                                                                            ");
-            Console.SetCursorPosition(2, 36);
-        }
-
-        static void ClearInstructure()
-        {
-
+            for (int i = 0; i < 10; i++)
+            {
+                Console.SetCursorPosition(2, 36+i);
+                Console.Write("                                                                                                                                                                                            ");
+            }
         }
 
         static int IsValidAttack(int xPosition, int yPosition, int[] xPositions, int[] yPositions)
         {
             for (int i = 0; i < xPositions.Length; i++)
             {
-                if (xPositions[i] == xPosition+2 || xPositions[i] == xPosition-2 || yPositions[i] == yPosition+1 || yPositions[i] == yPosition-2)
+                if (xPositions[i] == xPosition+2 || xPositions[i] == xPosition-2 || yPositions[i] == yPosition+1 || yPositions[i] == yPosition-1)
                 {
                     return i;
                 }
@@ -343,10 +319,10 @@ namespace APCSP
         static void CreateObjects(int[] importantXPositions, int[] importantYPositions, ref Player kunKun, ref Player monster, ref Player boss)
         {
             Random r = new Random();
-            kunKun = new Player("答", 10, 100, 10, 74, 18);
-            monster = new Player("▲", r.Next(kunKun.atk - (int) (kunKun.atk * 0.1), kunKun.atk + (int) (kunKun.atk * 0.1)), r.Next(kunKun.hp - (int) (kunKun.hp * 0.1), kunKun.hp + (int) (kunKun.hp * 0.1)), 10, monster.RandomGenerateXPosition());
+            kunKun = new Player("答", "KunKun", 10, 100, 10, 74, 18);
+            monster = new Player("▲", "monster", r.Next(kunKun.atk - (int) (kunKun.atk * 0.1), kunKun.atk + (int) (kunKun.atk * 0.1)), r.Next(kunKun.hp - (int) (kunKun.hp * 0.1), kunKun.hp + (int) (kunKun.hp * 0.1)), 10, monster.RandomGenerateXPosition());
             monster.yPosition = monster.RandomGenerateYPosition(monster.xPosition, importantXPositions, importantYPositions, kunKun, monster);
-            boss = new Player("首", 114, 5141, 91, 98, 10); //hen, hen, hen, aaaaaaaaaaaaaaaaa
+            boss = new Player("首", "boss", 114, 5141, 91, 98, 10); //hen, hen, hen, aaaaaaaaaaaaaaaaa
 
             importantXPositions[3] = monster.xPosition; //1st question, 2nd save, 3rd BOSS, 4th monster
             importantYPositions[3] = monster.yPosition;
@@ -357,7 +333,7 @@ namespace APCSP
             Console.Write("Save"); //need a sign
         }
 
-        static void StartPageGuide()
+        static void StartGamePage()
         {
             RedBlocks();
 
@@ -384,7 +360,36 @@ namespace APCSP
             Console.Write("choose selection");
         }
 
-        static void StartGameGuide()
+        static void EndGamePage(bool winOrLose)
+        {
+            string title = winOrLose ? "You Won!" : "You Lose";
+            Console.Clear();
+            RedBlocks();
+
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.SetCursorPosition(74, 5);
+            Console.Write(title);
+
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.SetCursorPosition(71, 13);
+            Console.Write("Replay Game");
+
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.SetCursorPosition(72, 17);
+            Console.Write("Quit Game");
+
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.SetCursorPosition(157, 37);
+            Console.Write("Press W & S to");
+            Console.SetCursorPosition(156, 38);
+            Console.Write("change selection");
+            Console.SetCursorPosition(159, 41);
+            Console.Write("Press J to");
+            Console.SetCursorPosition(156, 42);
+            Console.Write("choose selection");
+        }
+
+        static void InGameGuide()
         {
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.SetCursorPosition(158, 32);
@@ -444,8 +449,9 @@ namespace APCSP
             }
         }
 
-        static bool StartGameOrNot()
+        static bool StartGameOrNot(bool startOrEnd)
         {
+            string title = startOrEnd ? "Start  Game" : "Replay Game";
             bool start = true;
             bool endLoop = false;
             while (!endLoop)
@@ -458,14 +464,14 @@ namespace APCSP
                         Console.Write("Quit Game");
                         Console.ForegroundColor = ConsoleColor.Red;
                         Console.SetCursorPosition(71, 13);
-                        Console.Write("Start  Game");
+                        Console.Write(title);
                         start = true;
                         break;
 
                     case 's':
                         Console.ForegroundColor = ConsoleColor.White;
                         Console.SetCursorPosition(71, 13);
-                        Console.Write("Start  Game");
+                        Console.Write(title);
                         Console.ForegroundColor = ConsoleColor.Red;
                         Console.SetCursorPosition(72, 17);
                         Console.Write("Quit Game");
@@ -479,7 +485,6 @@ namespace APCSP
             return start;
         }
 
-
         static void Main(string[] args)
         {
             int[] importantXPositions = {148, 2, 98, 0}; //arrays without monster's position
@@ -490,22 +495,23 @@ namespace APCSP
             Random r = new Random();
             Console.CursorVisible = false;
 
+            Console.WriteLine("Please use Windows && screen size >= 15.6 inches to run this program:)");
             Console.Write("Full screen, then press any key to start.");
-            Console.ReadKey();
+            Console.ReadKey(true);
             Console.Clear();
 
-            StartPageGuide();
+            StartGamePage();
             while (true)
             {
                 switch (recentStage)
                 {
                     case 0: //start page
-                        recentStage = StartGameOrNot() ? 1 : 4;
+                        recentStage = StartGameOrNot(true) ? 1 : 5;
                         break;
                     case 1: //in game
                         Console.Clear();
                         RedBlocks();
-                        StartGameGuide();
+                        InGameGuide();
 
                         Player kunKun = new Player();
                         Player monster = new Player();
@@ -528,9 +534,15 @@ namespace APCSP
                         break;
                     case 2: //continue game
                         break;
-                    case 3: //end game page
+                    case 3: //lost game page
+                        EndGamePage(false);
+                        recentStage = StartGameOrNot(false) ? 1 : 5;
                         break;
-                    case 4: //end game
+                    case 4: //win game page
+                        EndGamePage(true);
+                        recentStage = StartGameOrNot(false) ? 1 : 5;
+                        break;
+                    case 5: //end game
                         Console.Clear();
                         Console.ForegroundColor = ConsoleColor.White;
                         Environment.Exit(0);
