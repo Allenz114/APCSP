@@ -190,7 +190,7 @@ namespace APCSP
                                     kunKun.recentHp = kunKun.hp;
                                     Console.SetCursorPosition(monster.xPosition, monster.yPosition);
                                     Console.Write(" ");
-                                    monster = new Player("▲", "monster", r.Next(kunKun.atk - (int) (kunKun.atk * 0.1), kunKun.atk + (int) (kunKun.atk * 0.1)), r.Next(kunKun.hp - (int) (kunKun.hp * 0.1), kunKun.hp + (int) (kunKun.hp * 0.1)), 10, monster.RandomGenerateXPosition());
+                                    monster = new Player("▲", "monster", r.Next(kunKun.atk - (int)(kunKun.atk * 0.1), kunKun.atk + (int)(kunKun.atk * 0.1)), r.Next(kunKun.hp - (int)(kunKun.hp * 0.1), kunKun.hp + (int)(kunKun.hp * 0.1)), 10, monster.RandomGenerateXPosition());
                                     monster.Show();
                                 }
                                 break;
@@ -291,9 +291,9 @@ namespace APCSP
                     }
                 }
                 ClearConsole();
-                Console.Write("You hit {0} {1} hp, {0} still have {2} hp",nonKunKun.name, kunKun.atkedHp, nonKunKun.recentHp);
+                Console.Write("You hit {0} {1} hp, {0} still have {2} hp", nonKunKun.name, kunKun.atkedHp, nonKunKun.recentHp);
                 Console.SetCursorPosition(2, 37);
-                Console.Write("{0} hit you {1} hp, you still have {2} hp",nonKunKun.name, nonKunKun.atkedHp, kunKun.recentHp);
+                Console.Write("{0} hit you {1} hp, you still have {2} hp", nonKunKun.name, nonKunKun.atkedHp, kunKun.recentHp);
                 Console.SetCursorPosition(2, 38);
             }
             return false;
@@ -328,7 +328,7 @@ namespace APCSP
         {
             for (int i = 0; i < 10; i++)
             {
-                Console.SetCursorPosition(2, 36+i);
+                Console.SetCursorPosition(2, 36 + i);
                 Console.Write("                                                                                                                                                   ");
             }
             Console.SetCursorPosition(2, 36);
@@ -338,7 +338,7 @@ namespace APCSP
         {
             for (int i = 0; i < xPositions.Length; i++)
             {
-                if (xPositions[i] == xPosition+2 || xPositions[i] == xPosition-2 || yPositions[i] == yPosition+1 || yPositions[i] == yPosition-1)
+                if (xPositions[i] == xPosition + 2 || xPositions[i] == xPosition - 2 || yPositions[i] == yPosition + 1 || yPositions[i] == yPosition - 1)
                 {
                     return i;
                 }
@@ -368,8 +368,7 @@ namespace APCSP
         {
             Random r = new Random();
             kunKun = new Player("答", "KunKun", 10, 100, 10, 74, 18);
-            monster = new Player("▲", "monster", r.Next(kunKun.atk - (int) (kunKun.atk * 0.1), kunKun.atk + (int) (kunKun.atk * 0.1)), r.Next(kunKun.hp - (int) (kunKun.hp * 0.1), kunKun.hp + (int) (kunKun.hp * 0.1)), 10, monster.RandomGenerateXPosition());
-            monster.yPosition = monster.RandomGenerateYPosition(monster.xPosition, importantXPositions, importantYPositions, kunKun, monster);
+            monster = new Player("▲", "monster", r.Next(kunKun.atk - (int)(kunKun.atk * 0.1), kunKun.atk + (int)(kunKun.atk * 0.1)), r.Next(kunKun.hp - (int)(kunKun.hp * 0.1), kunKun.hp + (int)(kunKun.hp * 0.1)), 10, 72, 18);
             boss = new Player("首", "boss", 114, 5141, 91, 98, 10); //hen, hen, hen, aaaaaaaaaaaaaaaaa
 
             importantXPositions[3] = monster.xPosition; //1st question, 2nd save, 3rd BOSS, 4th monster
@@ -535,8 +534,8 @@ namespace APCSP
 
         static void Main(string[] args)
         {
-            int[] importantXPositions = {148, 2, 98, 0}; //arrays without monster's position
-            int[] importantYPositions = {34, 34, 10, 0};
+            int[] importantXPositions = { 148, 2, 98, 0 }; //arrays without monster's position
+            int[] importantYPositions = { 34, 34, 10, 0 };
             Console.SetWindowSize(200, 100);
             Console.SetBufferSize(210, 110);
             int recentStage = 0;
@@ -565,7 +564,7 @@ namespace APCSP
                         Player monster = new Player();
                         Player boss = new Player();
                         CreateObjects(importantXPositions, importantYPositions, ref kunKun, ref monster, ref boss);
-                        
+
 
 
                         kunKun.Show();
