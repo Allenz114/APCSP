@@ -130,6 +130,7 @@ namespace APCSP
                             CoverLastPosition(kunKun.xPosition, kunKun.yPosition);
                             kunKun.yPosition -= 1;
                             kunKun.Show();
+                            ClearConsole();
                         }
                         break;
                     case 's':
@@ -138,6 +139,7 @@ namespace APCSP
                             CoverLastPosition(kunKun.xPosition, kunKun.yPosition);
                             kunKun.yPosition += 1;
                             kunKun.Show();
+                            ClearConsole();
                         }
                         break;
                     case 'a':
@@ -146,6 +148,7 @@ namespace APCSP
                             CoverLastPosition(kunKun.xPosition, kunKun.yPosition);
                             kunKun.xPosition -= 2;
                             kunKun.Show();
+                            ClearConsole();
                         }
                         break;
                     case 'd':
@@ -154,20 +157,24 @@ namespace APCSP
                             CoverLastPosition(kunKun.xPosition, kunKun.yPosition);
                             kunKun.xPosition += 2;
                             kunKun.Show();
+                            ClearConsole();
                         }
                         break;
                     case 'j': //attack
                         switch (IsValidAttack(kunKun.xPosition, kunKun.yPosition, importantXPositions, importantYPositions))
                         {
                             case 0: //question
-                                Question(ref kunKun);
-                                kunKun.weapon = "Physics Excalibur";
-                                kunKun.atk += 999;
-                                kunKun.hp += 9999;
-                                ClearConsole();
-                                Console.Write("Congradulations! You got Weapon: Physics Excalibur");
-                                Console.SetCursorPosition(2, 37);
-                                Console.Write("HP + 9999, atk + 999");
+                                if (Question(ref kunKun))
+                                {
+                                    kunKun.weapon = "Physics Excalibur";
+                                    kunKun.atk += 999;
+                                    kunKun.hp += 9999;
+                                    ResetProfile(kunKun);
+                                    ClearConsole();
+                                    Console.Write("Congradulations! You got Weapon: Physics Excalibur");
+                                    Console.SetCursorPosition(2, 37);
+                                    Console.Write("HP + 9999, atk + 999");
+                                }
                                 break;
                             case 1: //save
                                 break;
@@ -190,11 +197,9 @@ namespace APCSP
                                     kunKun.recentHp = kunKun.hp;
                                     Console.SetCursorPosition(monster.xPosition, monster.yPosition);
                                     Console.Write(" ");
-                                    monster = new Player("▲", "monster", r.Next(kunKun.atk - (int) (kunKun.atk * 0.1), kunKun.atk + (int) (kunKun.atk * 0.1)), r.Next(kunKun.hp - (int) (kunKun.hp * 0.1), kunKun.hp + (int) (kunKun.hp * 0.1)), 10, monster.RandomGenerateXPosition());
+                                    monster = new Player("▲", "monster", r.Next(kunKun.atk - (int)(kunKun.atk * 0.1), kunKun.atk + (int)(kunKun.atk * 0.1)), r.Next(kunKun.hp - (int)(kunKun.hp * 0.1), kunKun.hp + (int)(kunKun.hp * 0.1)), 10, monster.RandomGenerateXPosition());
                                     monster.Show();
                                 }
-                                break;
-                            case 114514: //nothing happens
                                 break;
                         }
                         break;
@@ -215,35 +220,58 @@ namespace APCSP
             }
         }
 
-        static void Question(ref Player kunKun) //lai san dao ti jiu xing le
+        static void ResetHpProfile(Player kunKun)
+        {
+            Console.SetCursorPosition(152, 3);
+            Console.Write("HP: {0}/{1}", kunKun.recentHp, kunKun.hp);
+        }
+
+        static void ResetProfile(Player kunKun)
+        {
+            Console.SetCursorPosition(152, 3);
+            Console.Write("HP: {0}/{1}", kunKun.recentHp, kunKun.hp);
+            Console.SetCursorPosition(152, 4);
+            Console.Write("ATK: {0}", kunKun.atk);
+            Console.SetCursorPosition(152, 5);
+            Console.Write("Weapon: {0}", kunKun.weapon);
+        }
+
+        static bool Question(ref Player kunKun) //3 questions
         {
             ClearConsole();
-            Console.Write("Is 0.9 repeat equals 1? Type 1 for yes, 2 for no");
-            Console.SetCursorPosition(2, 37);
-            if (Console.ReadKey().KeyChar == '1')
+            Console.Write("How many laws do Newton's Laws have?");
+            if (Console.ReadKey(true).KeyChar == '3')
             {
-                Console.SetCursorPosition(2, 37);
+                ClearConsole();
                 Console.Write("You are right! HP + 100, atk + 10");
+                Console.Write("Press any key to continue");
+                Console.ReadKey(true);
+                ResetProfile(kunKun);
                 kunKun.hp += 100;
                 kunKun.atk += 10;
                 ClearConsole();
-                Console.Write("");
-                Console.SetCursorPosition(2, 37);
-                if (int.Parse(Console.ReadLine()) == 1)
+                Console.Write("Is 0.9 repeat equals 1? Type 1 for yes, 2 for no");
+                if (Console.ReadKey(true).KeyChar == '1')
                 {
-                    Console.SetCursorPosition(2, 37);
+                    ClearConsole();
                     Console.Write("You are right! HP + 200, atk + 20");
+                    Console.Write("Press any key to continue");
+                    Console.ReadKey(true);
+                    ResetProfile(kunKun);
                     kunKun.hp += 200;
                     kunKun.atk += 20;
                     ClearConsole();
-                    Console.Write("");
-                    Console.SetCursorPosition(2, 37);
-                    if (int.Parse(Console.ReadLine()) == 1)
+                    Console.Write("What is ");
+                    if (Console.ReadKey(true).KeyChar == '1')
                     {
-                        Console.SetCursorPosition(2, 37);
+                        ClearConsole();
                         Console.Write("You are right! HP + 300, atk + 30");
+                        Console.Write("Press any key to continue");
+                        Console.ReadKey(true);
+                        ResetProfile(kunKun);
                         kunKun.hp += 300;
                         kunKun.atk += 30;
+                        return true;
                     }
                     else
                     {
@@ -262,6 +290,7 @@ namespace APCSP
                 ClearConsole();
                 Console.Write("That's incorrect");
             }
+            return false;
         }
 
         static bool Fight(ref Player kunKun, ref Player nonKunKun)
@@ -270,7 +299,7 @@ namespace APCSP
             Console.Write("Start fight with monster!");
             Console.SetCursorPosition(2, 37);
             Console.Write("Press J to continue.");
-            while (kunKun.recentHp > 0)
+            while (kunKun.recentHp <= 0)
             {
                 if (JAttack(ref kunKun, ref nonKunKun)) //if one of their's hp <= 0
                 {
@@ -291,9 +320,9 @@ namespace APCSP
                     }
                 }
                 ClearConsole();
-                Console.Write("You hit {0} {1} hp, {0} still have {2} hp",nonKunKun.name, kunKun.atkedHp, nonKunKun.recentHp);
+                Console.Write("You hit {0} {1} hp, {0} still have {2} hp", nonKunKun.name, kunKun.atkedHp, nonKunKun.recentHp);
                 Console.SetCursorPosition(2, 37);
-                Console.Write("{0} hit you {1} hp, you still have {2} hp",nonKunKun.name, nonKunKun.atkedHp, kunKun.recentHp);
+                Console.Write("{0} hit you {1} hp, you still have {2} hp", nonKunKun.name, nonKunKun.atkedHp, kunKun.recentHp);
                 Console.SetCursorPosition(2, 38);
             }
             return false;
@@ -305,9 +334,9 @@ namespace APCSP
             switch (Console.ReadKey(true).KeyChar)
             {
                 case 'j':
-                    kunKun.atkedHp = kunKun.atk + (r.Next(0, 101) <= kunKun.criticalRate ? kunKun.atk : 0);
+                    kunKun.atkedHp = kunKun.atk + r.Next(0, 101) <= kunKun.criticalRate ? kunKun.atk : 0;
                     nonKunKun.recentHp -= kunKun.atkedHp;
-                    nonKunKun.atkedHp = nonKunKun.atk + (r.Next(0, 101) <= nonKunKun.criticalRate ? nonKunKun.atk : 0);
+                    nonKunKun.atkedHp = nonKunKun.atk + r.Next(0, 101) <= nonKunKun.criticalRate ? nonKunKun.atk : 0;
                     kunKun.recentHp -= nonKunKun.atkedHp;
                     if (nonKunKun.recentHp <= 0 || kunKun.recentHp <= 0)
                     {
@@ -328,17 +357,17 @@ namespace APCSP
         {
             for (int i = 0; i < 10; i++)
             {
-                Console.SetCursorPosition(2, 36+i);
-                Console.Write("                                                                                                                                                   ");
+                Console.SetCursorPosition(2, 36 + i);
+                Console.Write("                                                                                                                                                    ");
             }
             Console.SetCursorPosition(2, 36);
         }
 
-        static int IsValidAttack(int xPosition, int yPosition, int[] xPositions, int[] yPositions)
+        static int IsValidAttack(int xPosition, int yPosition, int[] importantXPositions, int[] importantYPositions)
         {
-            for (int i = 0; i < xPositions.Length; i++)
+            for (int i = 0; i < importantXPositions.Length; i++)
             {
-                if (xPositions[i] == xPosition+2 || xPositions[i] == xPosition-2 || yPositions[i] == yPosition+1 || yPositions[i] == yPosition-1)
+                if (importantXPositions[i] == xPosition + 2 || importantXPositions[i] == xPosition - 2 || importantYPositions[i] == yPosition + 1 || importantYPositions[i] == yPosition - 1)
                 {
                     return i;
                 }
@@ -368,7 +397,7 @@ namespace APCSP
         {
             Random r = new Random();
             kunKun = new Player("答", "KunKun", 10, 100, 10, 74, 18);
-            monster = new Player("▲", "monster", r.Next(kunKun.atk - (int) (kunKun.atk * 0.1), kunKun.atk + (int) (kunKun.atk * 0.1)), r.Next(kunKun.hp - (int) (kunKun.hp * 0.1), kunKun.hp + (int) (kunKun.hp * 0.1)), 10, monster.RandomGenerateXPosition());
+            monster = new Player("▲", "monster", r.Next(kunKun.atk - (int)(kunKun.atk * 0.1), kunKun.atk + (int)(kunKun.atk * 0.1)), r.Next(kunKun.hp - (int)(kunKun.hp * 0.1), kunKun.hp + (int)(kunKun.hp * 0.1)), 10, monster.RandomGenerateXPosition());
             monster.yPosition = monster.RandomGenerateYPosition(monster.xPosition, importantXPositions, importantYPositions, kunKun, monster);
             boss = new Player("首", "boss", 114, 5141, 91, 98, 10); //hen, hen, hen, aaaaaaaaaaaaaaaaa
 
@@ -480,6 +509,7 @@ namespace APCSP
             for (int i = 0; i < 46; i++)
             {
                 Console.Write("■");
+                Console.SetCursorPosition(0, Console.CursorTop + 1);
             }
 
             Console.SetCursorPosition(150, 0);
@@ -535,8 +565,8 @@ namespace APCSP
 
         static void Main(string[] args)
         {
-            int[] importantXPositions = {148, 2, 98, 0}; //arrays without monster's position
-            int[] importantYPositions = {34, 34, 10, 0};
+            int[] importantXPositions = { 148, 2, 98, 0 }; //arrays without monster's position
+            int[] importantYPositions = { 34, 34, 10, 0 };
             Console.SetWindowSize(200, 100);
             Console.SetBufferSize(210, 110);
             int recentStage = 0;
@@ -565,22 +595,17 @@ namespace APCSP
                         Player monster = new Player();
                         Player boss = new Player();
                         CreateObjects(importantXPositions, importantYPositions, ref kunKun, ref monster, ref boss);
-                        
-
 
                         kunKun.Show();
                         monster.Show();
                         boss.Show();
+                        ResetProfile(kunKun);
                         //Sound ji = new Sound();
                         //ji.CallJi();
 
-                        if (Move(importantXPositions, importantYPositions, ref kunKun, ref boss, ref monster))
+                        if (Move(importantXPositions, importantYPositions, ref kunKun, ref monster, ref boss))
                         {
                             recentStage = 3;
-                        }
-                        else
-                        {
-                            recentStage = 4;
                         }
 
                         break;
