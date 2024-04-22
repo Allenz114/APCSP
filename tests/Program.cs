@@ -1,19 +1,14 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using System.Media;
 
 class Program
 {
-    [DllImport("kernel32.dll", ExactSpelling = true)]
-    private static extern IntPtr GetConsoleWindow();
-
-    [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-    private static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
-
-    private const int SW_MAXIMIZE = 3;
+    [DllImport("winmm.dll", SetLastError = true)]
+    static extern bool PlaySound(string pszSound, UIntPtr hmod, uint fdwSound);
 
     static void Main()
     {
-        ShowWindow(GetConsoleWindow(), SW_MAXIMIZE);
-        Console.WriteLine("Hello, World!");
+        PlaySound(@"C:\Users\28162\Desktop\C#\APCSP\tests\bin\Debug\net8.0\Ji.wav", UIntPtr.Zero, 0x00020000);
     }
 }

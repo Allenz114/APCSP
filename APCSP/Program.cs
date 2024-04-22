@@ -4,37 +4,29 @@ using System.Runtime.InteropServices;
 
 namespace APCSP
 {
+    class Sound
+    {
+        public string fileName;
+        public string curentDirectory = AppDomain.CurrentDomain.BaseDirectory;
+        public string fullPath;
+
+        [DllImport("winmm.dll")]
+        public static extern long PlaySound(string fineName, IntPtr hModule, uint dwFlags);
+
+        public Sound (string fileName)
+        {
+            this.fileName = fileName;
+            fullPath = Path.Combine(curentDirectory, fileName);
+        }
+
+        public void Play()
+        {
+            PlaySound(fullPath, IntPtr.Zero, 0x20000);
+        }
+    }
     internal class Program
     {
-        //struct Sound
-        //{
-        //    [DllImport("winmm.dll")]
-        //    public static extern long PlaySound(string fineName, long a, long b);
-
-        //    public string fileName;
-        //    public string curentDirectory = AppDomain.CurrentDomain.BaseDirectory;
-        //    public string fullPath;
-
-        //    public Sound()
-        //    {
-        //        fileName = "";
-        //        fullPath = "";
-        //    }
-
-        //    public void CallJi()
-        //    {
-        //        PlaySound(Ji(), 0, 0);
-        //    }
-        //    public string Ji()
-        //    {
-        //        fileName = "Ji.mp3";
-        //        fullPath = Path.Combine(curentDirectory, fileName);
-        //        return fullPath;
-        //    }
-        //}
-
-
-        struct Player
+    struct Player
         {
             public string looksLike;
             public string name;
@@ -116,11 +108,14 @@ namespace APCSP
             }
         }
 
-        static bool Move(int[] importantXPositions, int[] importantYPositions, ref Player kunKun, ref Player monster, ref Player boss)
+        static bool Move(int[] importantXPositions, int[] importantYPositions, ref Player kunKun, ref Player monster, ref Player boss, Sound sound)
         {
             Random r = new Random();
             while (true)
             {
+                kunKun.recentHp = kunKun.hp;
+                ResetProfile(ref kunKun);
+                ClearConsole();
                 Console.SetCursorPosition(kunKun.xPosition, kunKun.yPosition);
                 switch (Console.ReadKey(true).KeyChar)
                 {
@@ -130,7 +125,6 @@ namespace APCSP
                             CoverLastPosition(kunKun.xPosition, kunKun.yPosition);
                             kunKun.yPosition -= 1;
                             kunKun.Show();
-                            ClearConsole();
                         }
                         break;
                     case 's':
@@ -139,7 +133,6 @@ namespace APCSP
                             CoverLastPosition(kunKun.xPosition, kunKun.yPosition);
                             kunKun.yPosition += 1;
                             kunKun.Show();
-                            ClearConsole();
                         }
                         break;
                     case 'a':
@@ -148,7 +141,6 @@ namespace APCSP
                             CoverLastPosition(kunKun.xPosition, kunKun.yPosition);
                             kunKun.xPosition -= 2;
                             kunKun.Show();
-                            ClearConsole();
                         }
                         break;
                     case 'd':
@@ -157,7 +149,6 @@ namespace APCSP
                             CoverLastPosition(kunKun.xPosition, kunKun.yPosition);
                             kunKun.xPosition += 2;
                             kunKun.Show();
-                            ClearConsole();
                         }
                         break;
                     case 'j': //attack
@@ -169,36 +160,46 @@ namespace APCSP
                                     kunKun.weapon = "Physics Excalibur";
                                     kunKun.atk += 999;
                                     kunKun.hp += 9999;
-                                    ResetProfile(kunKun);
+                                    ResetProfile(ref kunKun);
                                     ClearConsole();
                                     Console.Write("Congradulations! You got Weapon: Physics Excalibur");
                                     Console.SetCursorPosition(2, 37);
                                     Console.Write("HP + 9999, atk + 999");
                                 }
                                 break;
-                            case 1: //save
-                                break;
-                            case 2: //boss
-                                if (Fight(ref kunKun, ref boss)) //lose
+                            case 1: //boss
+                                if (Fight(ref kunKun, ref boss)) //win
                                 {
+                                    sound = new Sound("Win.wav");
+                                    sound.Play();
                                     return true;
                                 }
-                                else //win
+                                else //lose
                                 {
+                                    sound = new Sound("WhyYouDoThat.wav");
+                                    sound.Play();
                                     return false;
                                 }
-                            case 3: //monster
-                                if (Fight(ref kunKun, ref monster)) //lose
+                            case 2: //monster
+                                if (Fight(ref kunKun, ref monster)) //win, regenerate monster
                                 {
-                                    return true;
-                                }
-                                else //regenerate monster
-                                {
-                                    kunKun.recentHp = kunKun.hp;
+                                    sound = new Sound("Win.wav");
+                                    sound.Play();
+                                    kunKun.hp += 100;
+                                    kunKun.atk += 10;
                                     Console.SetCursorPosition(monster.xPosition, monster.yPosition);
                                     Console.Write(" ");
                                     monster = new Player("▲", "monster", r.Next(kunKun.atk - (int)(kunKun.atk * 0.1), kunKun.atk + (int)(kunKun.atk * 0.1)), r.Next(kunKun.hp - (int)(kunKun.hp * 0.1), kunKun.hp + (int)(kunKun.hp * 0.1)), 10, monster.RandomGenerateXPosition());
+                                    monster.yPosition = monster.RandomGenerateYPosition(monster.xPosition, importantXPositions, importantYPositions, kunKun, monster);
+                                    importantXPositions[2] = monster.xPosition;
+                                    importantYPositions[2] = monster.yPosition;
                                     monster.Show();
+                                }
+                                else
+                                {
+                                    sound = new Sound("WhyYouDoThat.wav");
+                                    sound.Play();
+                                    return false;
                                 }
                                 break;
                         }
@@ -206,14 +207,18 @@ namespace APCSP
                     case '1': //special gift
                         if (Console.ReadKey(true).KeyChar == '1' ? Console.ReadKey(true).KeyChar == '4' ? Console.ReadKey(true).KeyChar == '5' ? Console.ReadKey(true).KeyChar == '1' ? Console.ReadKey(true).KeyChar == '4' ? true : false : false : false : false : false)
                         {
-                            kunKun.weapon = "Lawyer's Letter";
+                            kunKun.weapon = "Lawyer's Letter  ";
                             kunKun.atk += 250;
                             kunKun.hp += 1919;
+                            ResetProfile(ref kunKun);
                             ClearConsole();
                             // Console.ForegroundColor = ConsoleColor.????;
                             Console.Write("Congradulations! You got Weapon: Lawyer's letter");
                             Console.SetCursorPosition(2, 37);
                             Console.Write("HP + 1919, atk + 250");
+                            Console.SetCursorPosition(2, 38);
+                            Console.Write("Press any key to continue.");
+                            Console.ReadKey(true);
                         }
                         break;
                 }
@@ -223,11 +228,14 @@ namespace APCSP
         static void ResetHpProfile(Player kunKun)
         {
             Console.SetCursorPosition(152, 3);
+            Console.Write("                  ");
+            Console.SetCursorPosition(152, 3);
             Console.Write("HP: {0}/{1}", kunKun.recentHp, kunKun.hp);
         }
 
-        static void ResetProfile(Player kunKun)
+        static void ResetProfile(ref Player kunKun)
         {
+            kunKun.recentHp = kunKun.hp;
             Console.SetCursorPosition(152, 3);
             Console.Write("HP: {0}/{1}", kunKun.recentHp, kunKun.hp);
             Console.SetCursorPosition(152, 4);
@@ -244,33 +252,37 @@ namespace APCSP
             {
                 ClearConsole();
                 Console.Write("You are right! HP + 100, atk + 10");
+                Console.SetCursorPosition(2, 37);
                 Console.Write("Press any key to continue");
                 Console.ReadKey(true);
-                ResetProfile(kunKun);
                 kunKun.hp += 100;
                 kunKun.atk += 10;
+                ResetProfile(ref kunKun);
                 ClearConsole();
                 Console.Write("Is 0.9 repeat equals 1? Type 1 for yes, 2 for no");
                 if (Console.ReadKey(true).KeyChar == '1')
                 {
                     ClearConsole();
                     Console.Write("You are right! HP + 200, atk + 20");
+                    Console.SetCursorPosition(2, 37);
                     Console.Write("Press any key to continue");
                     Console.ReadKey(true);
-                    ResetProfile(kunKun);
                     kunKun.hp += 200;
                     kunKun.atk += 20;
+                    ResetProfile(ref kunKun);
                     ClearConsole();
-                    Console.Write("What is ");
-                    if (Console.ReadKey(true).KeyChar == '1')
+                    Console.Write("What is Love?");
+                    Console.SetCursorPosition(2, 37);
+                    if (Console.ReadLine().ToLower().Trim() == "baby don't hurt me")
                     {
                         ClearConsole();
                         Console.Write("You are right! HP + 300, atk + 30");
+                        Console.SetCursorPosition(2, 37);
                         Console.Write("Press any key to continue");
                         Console.ReadKey(true);
-                        ResetProfile(kunKun);
                         kunKun.hp += 300;
                         kunKun.atk += 30;
+                        ResetProfile(ref kunKun);
                         return true;
                     }
                     else
@@ -290,6 +302,8 @@ namespace APCSP
                 ClearConsole();
                 Console.Write("That's incorrect");
             }
+            Console.ReadKey(true);
+            ClearConsole();
             return false;
         }
 
@@ -298,25 +312,31 @@ namespace APCSP
             ClearConsole();
             Console.Write("Start fight with monster!");
             Console.SetCursorPosition(2, 37);
-            Console.Write("Press J to continue.");
-            while (kunKun.recentHp <= 0)
+            Console.Write("Press any key to continue.");
+            while (kunKun.recentHp >= 0)
             {
+                Console.ReadKey(true);
                 if (JAttack(ref kunKun, ref nonKunKun)) //if one of their's hp <= 0
                 {
                     if (nonKunKun.recentHp <= 0)
                     {
+                        ResetHpProfile(kunKun);
                         ClearConsole();
                         Console.Write("Congradulations! You beat the {0}!", nonKunKun.name);
-                        return false;
+                        Console.SetCursorPosition(2, 37);
+                        Console.Write("Press any key to continue.");
+                        Console.ReadKey(true);
+                        return true;
                     }
                     else
                     {
+                        ResetHpProfile(kunKun);
                         ClearConsole();
                         Console.Write("You lost");
                         Console.SetCursorPosition(2, 39);
                         Console.Write("Press any key to continue.");
                         Console.ReadKey(true);
-                        return true;
+                        return false;
                     }
                 }
                 ClearConsole();
@@ -324,25 +344,22 @@ namespace APCSP
                 Console.SetCursorPosition(2, 37);
                 Console.Write("{0} hit you {1} hp, you still have {2} hp", nonKunKun.name, nonKunKun.atkedHp, kunKun.recentHp);
                 Console.SetCursorPosition(2, 38);
+                Console.WriteLine("Press any key to continue.");
+                ResetHpProfile(kunKun);
             }
-            return false;
+            return true;
         }
 
         static bool JAttack(ref Player kunKun, ref Player nonKunKun)
         {
             Random r = new Random();
-            switch (Console.ReadKey(true).KeyChar)
+            kunKun.atkedHp = kunKun.atk + (r.Next(0, 101) <= kunKun.criticalRate ? kunKun.atk : 0);
+            nonKunKun.recentHp -= kunKun.atkedHp;
+            nonKunKun.atkedHp = nonKunKun.atk + (r.Next(0, 101) <= nonKunKun.criticalRate ? nonKunKun.atk : 0);
+            kunKun.recentHp -= nonKunKun.atkedHp;
+            if (nonKunKun.recentHp <= 0 || kunKun.recentHp <= 0)
             {
-                case 'j':
-                    kunKun.atkedHp = kunKun.atk + r.Next(0, 101) <= kunKun.criticalRate ? kunKun.atk : 0;
-                    nonKunKun.recentHp -= kunKun.atkedHp;
-                    nonKunKun.atkedHp = nonKunKun.atk + r.Next(0, 101) <= nonKunKun.criticalRate ? nonKunKun.atk : 0;
-                    kunKun.recentHp -= nonKunKun.atkedHp;
-                    if (nonKunKun.recentHp <= 0 || kunKun.recentHp <= 0)
-                    {
-                        return true;
-                    }
-                    return false;
+                return true;
             }
             return false;
         }
@@ -401,13 +418,11 @@ namespace APCSP
             monster.yPosition = monster.RandomGenerateYPosition(monster.xPosition, importantXPositions, importantYPositions, kunKun, monster);
             boss = new Player("首", "boss", 114, 5141, 91, 98, 10); //hen, hen, hen, aaaaaaaaaaaaaaaaa
 
-            importantXPositions[3] = monster.xPosition; //1st question, 2nd save, 3rd BOSS, 4th monster
-            importantYPositions[3] = monster.yPosition;
+            importantXPositions[2] = monster.xPosition; //1st question, 2nd BOSS, 3rd monster
+            importantYPositions[2] = monster.yPosition;
 
             Console.SetCursorPosition(148, 34);
-            Console.Write("Question"); //need a sign
-            Console.SetCursorPosition(2, 34);
-            Console.Write("Save"); //need a sign
+            Console.Write("❓");
         }
 
         static void StartGamePage()
@@ -444,15 +459,15 @@ namespace APCSP
             RedBlocks();
 
             Console.ForegroundColor = ConsoleColor.White;
-            Console.SetCursorPosition(74, 5);
+            Console.SetCursorPosition(73, 5);
             Console.Write(title);
 
             Console.ForegroundColor = ConsoleColor.Red;
-            Console.SetCursorPosition(71, 13);
+            Console.SetCursorPosition(71, 14);
             Console.Write("Replay Game");
 
             Console.ForegroundColor = ConsoleColor.White;
-            Console.SetCursorPosition(72, 17);
+            Console.SetCursorPosition(72, 18);
             Console.Write("Quit Game");
 
             Console.ForegroundColor = ConsoleColor.Yellow;
@@ -469,6 +484,8 @@ namespace APCSP
         static void InGameGuide()
         {
             Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.SetCursorPosition(158, 31);
+            Console.Write("❓ = question");
             Console.SetCursorPosition(158, 32);
             Console.Write("答 = yourself");
             Console.SetCursorPosition(159, 33);
@@ -538,20 +555,20 @@ namespace APCSP
                 {
                     case 'w':
                         Console.ForegroundColor = ConsoleColor.White;
-                        Console.SetCursorPosition(72, 17);
+                        Console.SetCursorPosition(72, 18);
                         Console.Write("Quit Game");
                         Console.ForegroundColor = ConsoleColor.Red;
-                        Console.SetCursorPosition(71, 13);
+                        Console.SetCursorPosition(71, 14);
                         Console.Write(title);
                         start = true;
                         break;
 
                     case 's':
                         Console.ForegroundColor = ConsoleColor.White;
-                        Console.SetCursorPosition(71, 13);
+                        Console.SetCursorPosition(71, 14);
                         Console.Write(title);
                         Console.ForegroundColor = ConsoleColor.Red;
-                        Console.SetCursorPosition(72, 17);
+                        Console.SetCursorPosition(72, 18);
                         Console.Write("Quit Game");
                         start = false;
                         break;
@@ -565,8 +582,10 @@ namespace APCSP
 
         static void Main(string[] args)
         {
-            int[] importantXPositions = { 148, 2, 98, 0 }; //arrays without monster's position
-            int[] importantYPositions = { 34, 34, 10, 0 };
+            //1st question, 2nd BOSS, 3rd monster
+            int[] importantXPositions = { 148, 98, 0 }; //arrays without monster's position
+            int[] importantYPositions = { 34, 10, 0 };
+            Sound sound = new Sound ("Ji.wav");
             Console.SetWindowSize(200, 100);
             Console.SetBufferSize(210, 110);
             int recentStage = 0;
@@ -584,7 +603,7 @@ namespace APCSP
                 switch (recentStage)
                 {
                     case 0: //start page
-                        recentStage = StartGameOrNot(true) ? 1 : 5;
+                        recentStage = StartGameOrNot(true) ? 1 : 4;
                         break;
                     case 1: //in game
                         Console.Clear();
@@ -599,27 +618,23 @@ namespace APCSP
                         kunKun.Show();
                         monster.Show();
                         boss.Show();
-                        ResetProfile(kunKun);
-                        //Sound ji = new Sound();
-                        //ji.CallJi();
+                        ResetProfile(ref kunKun);
 
-                        if (Move(importantXPositions, importantYPositions, ref kunKun, ref monster, ref boss))
-                        {
-                            recentStage = 3;
-                        }
+                        sound = new Sound("JNTM.wav");
+                        sound.Play();
+
+                        recentStage = Move(importantXPositions, importantYPositions, ref kunKun, ref monster, ref boss, sound) ? 2 : 3;
 
                         break;
-                    case 2: //continue game
-                        break;
-                    case 3: //lost game page
-                        EndGamePage(false);
-                        recentStage = StartGameOrNot(false) ? 1 : 5;
-                        break;
-                    case 4: //win game page
+                    case 2: //win game page
                         EndGamePage(true);
-                        recentStage = StartGameOrNot(false) ? 1 : 5;
+                        recentStage = StartGameOrNot(false) ? 1 : 4;
                         break;
-                    case 5: //end game
+                    case 3: //lose game page
+                        EndGamePage(false);
+                        recentStage = StartGameOrNot(false) ? 1 : 4;
+                        break;
+                    case 4: //end game
                         Console.Clear();
                         Console.ForegroundColor = ConsoleColor.White;
                         Environment.Exit(0);
