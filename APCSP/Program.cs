@@ -61,7 +61,7 @@ namespace APCSP
             public int criticalRate;
             public int xPosition;
             public int yPosition;
-            public string weapon = "Wooden Sword";
+            public string weapon = "Basketball";
 
             public Player(string looksLike, string name, int atk, int hp, int criticalRate, int xPosition, int yPosition)
             {
@@ -191,6 +191,7 @@ namespace APCSP
                                     Console.Write("HP + 9999, atk + 999");
                                     Console.SetCursorPosition(2, 38);
                                     Console.Write("Press any key to continue.");
+                                    Console.ReadKey(true);
                                 }
                                 break;
                             case 1: //boss
@@ -501,7 +502,7 @@ namespace APCSP
 
         static void EndGamePage(bool winOrLose)
         {
-            string title = winOrLose ? "You Won!" : "You Lose";
+            string title = winOrLose ? "You Won!" : "You Lost";
             Console.Clear();
             RedBlocks();
 
