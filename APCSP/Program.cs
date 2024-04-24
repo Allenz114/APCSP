@@ -649,6 +649,7 @@ namespace APCSP
                         boss.Show();
                         ResetProfile(ref kunKun);
 
+                        //source from online
                         System.Media.SoundPlayer sound = new System.Media.SoundPlayer(Properties.Resources.JNTM);
                         sound.Play();
 
