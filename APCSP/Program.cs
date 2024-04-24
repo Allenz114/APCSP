@@ -26,28 +26,9 @@ using System;
 using System.IO.Enumeration;
 using System.Runtime.InteropServices;
 
+
 namespace APCSP
 {
-    class Sound
-    {
-        public string fileName;
-        public string curentDirectory = AppDomain.CurrentDomain.BaseDirectory;
-        public string fullPath;
-
-        [DllImport("winmm.dll")]
-        public static extern long PlaySound(string fineName, IntPtr hModule, uint dwFlags);
-
-        public Sound(string fileName)
-        {
-            this.fileName = fileName;
-            fullPath = Path.Combine(curentDirectory, fileName);
-        }
-
-        public void Play()
-        {
-            PlaySound(fullPath, IntPtr.Zero, 0x20000);
-        }
-    }
     internal class Program
     {
         struct Player
@@ -132,7 +113,7 @@ namespace APCSP
             }
         }
 
-        static bool Move(int[] importantXPositions, int[] importantYPositions, ref Player kunKun, ref Player monster, ref Player boss, Sound sound)
+        static bool Move(int[] importantXPositions, int[] importantYPositions, ref Player kunKun, ref Player monster, ref Player boss, System.Media.SoundPlayer sound)
         {
             Random r = new Random();
             while (true)
@@ -197,21 +178,21 @@ namespace APCSP
                             case 1: //boss
                                 if (Fight(ref kunKun, ref boss)) //win
                                 {
-                                    sound = new Sound("Win.wav");
+                                    sound = new System.Media.SoundPlayer(Properties.Resources.Win);
                                     sound.Play();
                                     return true;
                                 }
                                 else //lose
                                 {
-                                    sound = new Sound("WhyYouDoThat.wav");
+                                    sound = new System.Media.SoundPlayer(Properties.Resources.WhyYouDoThat);
                                     sound.Play();
                                     return false;
                                 }
                             case 2: //monster
                                 if (Fight(ref kunKun, ref monster)) //win, regenerate monster
                                 {
-                                    sound = new Sound("Win.wav");
-                                    sound.Play();
+                                    System.Media.SoundPlayer player = new System.Media.SoundPlayer(Properties.Resources.Win);
+                                    player.Play();
                                     kunKun.hp += 100;
                                     kunKun.atk += 10;
                                     ResetProfile(ref kunKun);
@@ -224,7 +205,7 @@ namespace APCSP
                                 }
                                 else
                                 {
-                                    sound = new Sound("WhyYouDoThat.wav");
+                                    sound = new System.Media.SoundPlayer(Properties.Resources.WhyYouDoThat);
                                     sound.Play();
                                     return false;
                                 }
@@ -633,7 +614,6 @@ namespace APCSP
             //1st question, 2nd BOSS, 3rd monster
             int[] importantXPositions = { 148, 98, 0 }; //arrays without monster's position
             int[] importantYPositions = { 34, 10, 0 };
-            Sound sound = new Sound("Ji.wav");
             Console.SetWindowSize(200, 100);
             Console.SetBufferSize(210, 110);
             int recentStage = 0;
@@ -669,7 +649,7 @@ namespace APCSP
                         boss.Show();
                         ResetProfile(ref kunKun);
 
-                        sound = new Sound("JNTM.wav");
+                        System.Media.SoundPlayer sound = new System.Media.SoundPlayer(Properties.Resources.JNTM);
                         sound.Play();
 
                         recentStage = Move(importantXPositions, importantYPositions, ref kunKun, ref monster, ref boss, sound) ? 2 : 3;
