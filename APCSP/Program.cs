@@ -1,4 +1,4 @@
-﻿//                 resource from online
+﻿//resource from https://gist.github.com/edokeh/7580064
 //                       _oo0oo_
 //                      o8888888o
 //                      88" . "88
